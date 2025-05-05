@@ -34,7 +34,6 @@ fun BuscaminasApp() {
     var estadoJuego by remember { mutableStateOf("Jugando...") }
     var juegoIniciado by remember { mutableStateOf(false) }
     var horaActual by remember { mutableStateOf(obtenerHoraActual()) }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         while (true) {
