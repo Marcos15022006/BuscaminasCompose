@@ -1,6 +1,4 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
@@ -16,9 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.pointerMoveFilter
+import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "Buscaminas") {
@@ -34,11 +33,25 @@ fun BuscaminasApp() {
     var tablero by remember { mutableStateOf(arrayOf<Array<Celda>>()) }
     var estadoJuego by remember { mutableStateOf("Jugando...") }
     var juegoIniciado by remember { mutableStateOf(false) }
+    var horaActual by remember { mutableStateOf(obtenerHoraActual()) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            horaActual = obtenerHoraActual()
+            delay(1000L)
+        }
+    }
+
     val buscaminas = remember { Busacaminas() }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "Buscaminas", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(8.dp))
+
+        Text(text = "Hora: $horaActual")
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row {
             OutlinedTextField(value = filas, onValueChange = { filas = it }, label = { Text("Filas") }, modifier = Modifier.weight(1f))
@@ -82,15 +95,14 @@ fun BuscaminasApp() {
                                 tablero[i][j].marcar()
                             }
                         })
-                        Spacer(modifier = Modifier.width(2.dp))// Espacio entre celdas
+                        Spacer(modifier = Modifier.width(2.dp))
                     }
                 }
-                Spacer(modifier = Modifier.height(4.dp)) // Espacio entre filas
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
 }
-
 @Composable
 fun CeldaUI(celda: Celda, tablero: Array<Array<Celda>>, x: Int, y: Int, onClick: () -> Unit, onRightClick: () -> Unit) {
     val color = when {
@@ -115,4 +127,8 @@ fun CeldaUI(celda: Celda, tablero: Array<Array<Celda>>, x: Int, y: Int, onClick:
             Text("M")
         }
     }
+}
+fun obtenerHoraActual(): String {
+    val formato = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+    return formato.format(Date())
 }
